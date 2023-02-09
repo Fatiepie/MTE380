@@ -4,16 +4,17 @@
 #include "Motor.h"
 
 class MotorControl {
-private:
+public:
   Motor* leftMotor;
   Motor* rightMotor;
 
-public:
-  MotorControl(int leftEncoderPin, int leftIn1Pin, int leftIn2Pin, int leftPwmPin, int rightEncoderPin, int rightIn1Pin, int rightIn2Pin, int rightPwmPin);
+  MotorControl(uint8_t leftEncoderPin, uint8_t leftIn1Pin, uint8_t leftIn2Pin, uint8_t leftPwmPin, uint8_t rightEncoderPin, uint8_t rightIn1Pin, uint8_t rightIn2Pin, uint8_t rightPwmPin);
   ~MotorControl();
 
   void setup();
+  
   void driveForward();
+  void stop();
   void turnDegrees(int deg);
 };
 

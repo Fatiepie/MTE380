@@ -1,7 +1,6 @@
 #include "Motor.h"
-#include <Arduino.h>
 
-Motor::Motor(int encoderPin, int in1Pin, int in2Pin, int pwmPin) {
+Motor::Motor(uint8_t encoderPin, uint8_t in1Pin, uint8_t in2Pin, uint8_t pwmPin) {
   EncoderCnt = 0;
   EncoderPin = encoderPin;
   IN1Pin = in1Pin;
@@ -25,7 +24,7 @@ int Motor::getPWM() {
   return PWM;
 }
 
-void Motor::setPWM(int pwm) {
+void Motor::setPWM(uint8_t pwm) {
   PWM = pwm;
   analogWrite(PWMPin, PWM);
 
@@ -48,9 +47,26 @@ void Motor::setDirection(MotorDirection dir) {
 }
 
 void Motor::motorStop() {
-  digitalWrite(IN1Pin, LOW);
-  digitalWrite(IN2Pin, LOW);
   setPWM(0);
 
+  digitalWrite(IN1Pin, LOW);
+  digitalWrite(IN2Pin, LOW);
+
   return;
+}
+
+void Motor::incrementEncoder() {
+  EncoderCnt++;
+
+  return;
+}
+
+void Motor::resetEncoder() {
+  EncoderCnt = 0;
+
+  return;
+}
+
+uint16_t Motor::getEncoderCnt() {
+  return EncoderCnt;
 }

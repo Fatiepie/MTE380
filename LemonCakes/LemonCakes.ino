@@ -10,16 +10,42 @@
 #define RIGHT_IN2 6
 #define RIGHT_PWM 10
 
+void leftEncoderISR();
+void rightEncoderISR();
+
 MotorControl* motors = new MotorControl(LEFT_ENCODER, LEFT_IN1, LEFT_IN2, LEFT_PWM, RIGHT_ENCODER, RIGHT_IN1, RIGHT_IN2, RIGHT_PWM);
-
+ 
 void setup() {
-  // put your setup code here, to run once:
+  // Set up pins of peripherals
+  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.begin(115200);
   motors->setup();
+  
+  // Set up encoder interrupts
+  attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER), leftEncoderISR, RISING);
+  attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER), rightEncoderISR, RISING);
 
-  // motors->driveForward();
+  digitalWrite(LED_BUILTIN, HIGH);
+  motors->driveForward();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
+// Serial.println(motors->leftMotor->getEncoderCnt());
+
+  delay(5000);
+  digitalWrite(LED_BUILTIN, LOW);
+  motors->stop();
+}
+
+void leftEncoderISR() {
+  motors->leftMotor->incrementEncoder();
+
+  return;
+}
+
+void rightEncoderISR() {
+  motors->rightMotor->incrementEncoder();
+
+  return;
 }

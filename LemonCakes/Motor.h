@@ -1,6 +1,9 @@
 #ifndef Motor_h
 #define Motor_h
 
+#include <stdint.h>
+#include <Arduino.h>
+
 enum MotorDirection {
   CW,
   CCW
@@ -9,22 +12,26 @@ enum MotorDirection {
 class Motor {
 
 private:
-  int EncoderCnt;
-  int EncoderPin;
-  int IN1Pin;
-  int IN2Pin;
-  int PWMPin;
-  int PWM;
+  uint16_t EncoderCnt;
+  uint8_t EncoderPin;
+  uint8_t IN1Pin;
+  uint8_t IN2Pin;
+  uint8_t PWMPin;
+  uint8_t PWM;
 
 public:
-  Motor(int encoderPin, int in1Pin, int in2Pin, int pwmPin);
+  Motor(uint8_t encoderPin, uint8_t in1Pin, uint8_t in2Pin, uint8_t pwmPin);
   void setup();
 
   int getPWM();
-  void setPWM(int pwm);
+  void setPWM(uint8_t pwm);
 
   void setDirection(MotorDirection dir);
   void motorStop();
+
+  void incrementEncoder();
+  void resetEncoder();
+  uint16_t getEncoderCnt();
 };
 
 #endif
