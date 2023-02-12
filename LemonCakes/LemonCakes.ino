@@ -17,25 +17,19 @@ MotorControl* motors = new MotorControl(LEFT_ENCODER, LEFT_IN1, LEFT_IN2, LEFT_P
  
 void setup() {
   // Set up pins of peripherals
-  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
   motors->setup();
   
   // Set up encoder interrupts
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER), leftEncoderISR, RISING);
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER), rightEncoderISR, RISING);
-
-  digitalWrite(LED_BUILTIN, HIGH);
-  motors->driveForward();
 }
 
 void loop() {
-
-// Serial.println(motors->leftMotor->getEncoderCnt());
-
-  delay(5000);
-  digitalWrite(LED_BUILTIN, LOW);
-  motors->stop();
+  // motors->driveForward();
+  // delay(5000);
+  // motors->stop();
+  // delay(5000);
 }
 
 void leftEncoderISR() {
