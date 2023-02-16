@@ -1,37 +1,50 @@
 #include "IMU.h"
 
-IMU* imu = new IMU();
+
+Adafruit_ICM20948 imu;
+sensors_event_t accel;
+sensors_event_t gyro;
+sensors_event_t temp;  
+float absGyro;
+
 
 void setupIMU() {
-  imu->setup();
-  
-  return;
-}
-
-void testIMU() {
-  imu->saveData();
-
-  return;
-}
-
-void IMU::setup() {
   imu.begin_I2C();
 
   imu.setAccelRange(ICM20948_ACCEL_RANGE_2_G);
   imu.setGyroRange(ICM20948_GYRO_RANGE_250_DPS);
 
+  absGyro = 0;
+  
   return;
 }
 
-void IMU::saveData() {
+void calcAbsGyro() { 
+  if(getGyro().z > 0.02 || getGyro().z < -0.02) {
+    absGyro = absGyro + getGyro().z * 0.1;
+  }
+  return;
+}
+
+float getAbsGyroDeg() {
+  return absGyro * 180 / 3.14159265358979323846;
+  // return absGyro;
+}
+
+float testIMU() {
+  saveIMUData();
+  return getGyro().z;
+}
+
+void saveIMUData() {
   imu.getEvent(&accel, &gyro, &temp);
 
   return;
 }
 
-sensors_vec_t IMU::getAccel() {
+sensors_vec_t getAccel() {
   return accel.acceleration;
 }
-sensors_vec_t IMU::getGyro() {
+sensors_vec_t getGyro() {
   return gyro.gyro;
 }

@@ -6,24 +6,16 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
+
 void setupIMU();
+void calcAbsGyro();
+float getAbsGyroDeg();
 
-void testIMU();
+float testIMU();
 
-class IMU {
+void saveIMUData();
 
-private:
-  Adafruit_ICM20948 imu;
-  sensors_event_t accel;
-  sensors_event_t gyro;
-  sensors_event_t temp;  
-
-public:
-  void setup();
-  void saveData();
-
-  sensors_vec_t getAccel();
-  sensors_vec_t getGyro();
-};
+sensors_vec_t getAccel();
+sensors_vec_t getGyro();
 
 #endif
