@@ -1,21 +1,27 @@
 #include "MotorControl.h"
+#include "IMU.h"
 
-MotorControl* motors = new MotorControl(LEFT_ENCODER, LEFT_IN1, LEFT_IN2, LEFT_PWM, RIGHT_ENCODER, RIGHT_IN1, RIGHT_IN2, RIGHT_PWM);
+Motor* leftMotor;
+Motor* rightMotor;
 
 void leftEncoderISR() {
-  motors->leftMotor->incrementEncoder();
+  leftMotor->incrementEncoder();
 
   return;
 }
 
 void rightEncoderISR() {
-  motors->rightMotor->incrementEncoder();
+  rightMotor->incrementEncoder();
 
   return;
 }
 
 void setupMotors() {
-  motors->setup();
+  leftMotor = new Motor(LEFT_ENCODER, LEFT_IN1, LEFT_IN2, LEFT_PWM);
+  rightMotor = new Motor(RIGHT_ENCODER, RIGHT_IN1, RIGHT_IN2, RIGHT_PWM);
+
+  leftMotor->setup();
+  rightMotor->setup();
 
   // Set up encoder interrupts
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER), leftEncoderISR, RISING);
@@ -25,34 +31,15 @@ void setupMotors() {
 }
 
 void testMotors() {
-  // motors->driveForward();
-  // delay(5000);
-  // motors->stop();
-  // delay(5000);
+  driveForward();
+  delay(5000);
+  stop();
+  delay(5000);
   
   return;
 }
 
-//////////////////////////////////////////// MOTOR OBJECT FUNCTIONS //////////////////////////////////////////////
-
-MotorControl::MotorControl(uint8_t leftEncoderPin, uint8_t leftIn1Pin, uint8_t leftIn2Pin, uint8_t leftPwmPin, uint8_t rightEncoderPin, uint8_t rightIn1Pin, uint8_t rightIn2Pin, uint8_t rightPwmPin) {
-  leftMotor = new Motor(leftEncoderPin, leftIn1Pin, leftIn2Pin, leftPwmPin);
-  rightMotor = new Motor(rightEncoderPin, rightIn1Pin, rightIn2Pin, rightPwmPin);
-}
-
-MotorControl::~MotorControl() {
-  delete leftMotor;
-  delete rightMotor;
-}
-
-void MotorControl::setup() {
-  leftMotor->setup();
-  rightMotor->setup();
-
-  return;
-}
-
-void MotorControl::driveForward() {
+void driveForward() {
   leftMotor->setDirection(CW);
   rightMotor->setDirection(CCW);
 
@@ -62,11 +49,53 @@ void MotorControl::driveForward() {
   return;
 }
 
-void MotorControl::stop() {
+void driveBackward() {
+  leftMotor->setDirection(CCW);
+  rightMotor->setDirection(CW);
+
+  leftMotor->setPWM(50);
+  rightMotor->setPWM(50);
+
+  return;
+}
+
+void stop() {
   leftMotor->motorStop();
   rightMotor->motorStop();
 }
 
-void MotorControl::turnDegrees(int deg) {
+void turnDegrees(int deg) {
+
+  float initialAngle = getAbsGyroDeg();
+
+  if(deg >= 0){
+    //do a clockwise turn
+    leftMotor->setDirection(CW);
+    rightMotor->setDirection(CW);
+    leftMotor->setPWM(50);
+    rightMotor->setPWM(50);     
+
+    while(getAbsGyroDeg() < initialAngle + deg){
+      saveIMUData();
+    }
+
+  }
+  else{
+    //do a ccw turn
+    leftMotor->setDirection(CCW);
+    rightMotor->setDirection(CCW);
+    leftMotor->setPWM(50);
+    rightMotor->setPWM(50); 
+
+    while(getAbsGyroDeg() > initialAngle + deg){
+      saveIMUData();
+    }
+
+  }
+
+  
+
   return;
+
 }
+
