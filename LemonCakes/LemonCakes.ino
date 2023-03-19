@@ -19,8 +19,10 @@ void setup() {
   setupMotors();
   setupIMU();
 
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
   
-  
+  delay(1000);
 }
 
 //three states -- go straight for a bit, left turn, go straight and then stop
@@ -37,31 +39,55 @@ void loop() {
     
     driveForward();
     
-    while(millis() < time1 + 5000){
+    // while(millis() < time1 + 10000){
+    //   driveStraight();
+    //   Serial.println(getLeftEncoder());
+    // }
+
+    // while(getRightEncoder() < 2785){
+    //   driveStraight();
+    //   Serial.println(getRightEncoder());
+    // }
+
+    while(millis() < time1 + 10000){
+      PIDCalc();
     }
 
+    stop();
 
-    state = state2;
+    state = state4;
   }
 
   else if(state == state2) {
-    
-    stop();
+
     delay(5000);
     turnDegrees(90);
     stop();
-    state = state3;
+    state = state4;
 
 
   }
 
-    else if(state == state3) {
+  else if(state == state3) {
+    delay(2000);
     
-    delay(5000);
-
+    int time1 = millis();
+    
     driveBackward();
+    
+    // while(millis() < time1 + 10000){
+    //   driveStraight();
+    //   Serial.println(getLeftEncoder());
+    // }
 
-    delay(5000);
+    while(getRightEncoder() < 2785){
+      driveStraight();
+      Serial.println(getRightEncoder());
+    }
+
+    // while(millis() < time1 + 10000){
+    //   PIDCalc();
+    // }
 
     stop();
 
@@ -70,10 +96,8 @@ void loop() {
 
   }
 
-  // testMotors();
-  // saveIMUData();
-  // Serial.println(getAbsGyroDeg());
-  // turnDegrees(90)
-  // Serial.println(testIMU());
+  else if(state == state4) {
+    // Serial.println(getRightEncoder());
+  }
   
 }

@@ -17,11 +17,18 @@ void leftEncoderISR();
 void rightEncoderISR();
 void setupMotors();
 
-void testMotors();
+uint32_t getLeftEncoder();
+uint32_t getLeftMeasuredRPM();
+
+uint32_t getRightEncoder();
+uint32_t getRightMeasuredRPM();
 
 void driveForward();
 void stop();
-void turnDegrees(int deg);
+void turnDegrees(float deg);
 void driveBackward();
+void driveStraight();
+
+void PIDCalc();
 
 #endif

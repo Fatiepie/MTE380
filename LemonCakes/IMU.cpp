@@ -20,15 +20,21 @@ void setupIMU() {
 }
 
 void calcAbsGyro() { 
-  if(getGyro().z > 0.02 || getGyro().z < -0.02) {
-    absGyro = absGyro + getGyro().z * 0.1;
+  if(getGyro().z > 0.06 || getGyro().z < -0.04) {
+    absGyro = absGyro + getGyro().z * 0.01;
   }
   return;
 }
 
 float getAbsGyroDeg() {
   return absGyro * 180 / 3.14159265358979323846;
-  // return absGyro;
+}
+
+void resetGyro() {
+  saveIMUData();
+  absGyro = 0;
+
+  return;
 }
 
 float testIMU() {

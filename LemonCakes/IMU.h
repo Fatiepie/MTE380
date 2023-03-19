@@ -11,6 +11,8 @@ void setupIMU();
 void calcAbsGyro();
 float getAbsGyroDeg();
 
+void resetGyro();
+
 float testIMU();
 
 void saveIMUData();

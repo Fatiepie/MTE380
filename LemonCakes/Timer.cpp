@@ -8,8 +8,9 @@ void setupTimer() {
   TCCR1A = 0;// set entire TCCR1A register to 0
   TCCR1B = 0;// same for TCCR1B
   TCNT1  = 0;//initialize counter value to 0
-  // set compare match register for 1hz increments
-  OCR1A = 6249;// = (16*10^6) / (1*256) - 1 (must be <65536)
+  // set compare match register for 10hz increments
+  // OCR1A = 6249;// = (16*10^6) / (10*256) - 1 (must be <65536)
+  OCR1A = 624;// = (16*10^6) / (100*256) - 1 (must be <65536)
   // OCR1A = 15624;// = (16*10^6) / (1*256) - 1 (must be <65536)
   // turn on CTC mode
   TCCR1B |= (1 << WGM12);

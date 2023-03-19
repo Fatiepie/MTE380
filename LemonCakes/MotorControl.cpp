@@ -4,14 +4,23 @@
 Motor* leftMotor;
 Motor* rightMotor;
 
+float driveStraightInitialAngle;
+bool encoderDisabled = false;
+
 void leftEncoderISR() {
-  leftMotor->incrementEncoder();
+  if(!encoderDisabled) {
+    leftMotor->incrementEncoder();
+    leftMotor->RPMCalc();
+  }
 
   return;
 }
 
 void rightEncoderISR() {
-  rightMotor->incrementEncoder();
+  if(!encoderDisabled) {
+    rightMotor->incrementEncoder();
+    rightMotor->RPMCalc();
+  }
 
   return;
 }
@@ -30,26 +39,42 @@ void setupMotors() {
   return;
 }
 
-void testMotors() {
-  driveForward();
-  delay(5000);
-  stop();
-  delay(5000);
-  
-  return;
+uint32_t getLeftEncoder() {
+  return leftMotor->getEncoderCnt();
+}
+
+uint32_t getLeftMeasuredRPM() {
+  return leftMotor->getMeasuredRPM();
+}
+
+uint32_t getRightEncoder() {
+  return rightMotor->getEncoderCnt();
+}
+
+uint32_t getRightMeasuredRPM() {
+  return rightMotor->getMeasuredRPM();
 }
 
 void driveForward() {
+  driveStraightInitialAngle = getAbsGyroDeg();
+  encoderDisabled = false;
+  
   leftMotor->setDirection(CW);
   rightMotor->setDirection(CCW);
 
-  leftMotor->setPWM(50);
-  rightMotor->setPWM(50);
+  leftMotor->setCommandedRPM(5000);
+  rightMotor->setCommandedRPM(5000);
+
+  // leftMotor->setPWM(50);
+  // rightMotor->setPWM(50);
 
   return;
 }
 
 void driveBackward() {
+  driveStraightInitialAngle = getAbsGyroDeg();
+  encoderDisabled = false;
+
   leftMotor->setDirection(CCW);
   rightMotor->setDirection(CW);
 
@@ -59,16 +84,41 @@ void driveBackward() {
   return;
 }
 
-void stop() {
-  leftMotor->motorStop();
-  rightMotor->motorStop();
+void driveStraight() {
+  saveIMUData();
+  if(getAbsGyroDeg() > driveStraightInitialAngle + 1) { // Drifting CW
+    leftMotor->setPWM(45);
+    rightMotor->setPWM(55);
+    digitalWrite(12, HIGH);
+  }
+  else if(getAbsGyroDeg() < driveStraightInitialAngle - 1) { //Drifting CCW
+    leftMotor->setPWM(55);
+    rightMotor->setPWM(45);
+    digitalWrite(11, HIGH);
+  }
+  else {
+    leftMotor->setPWM(50);
+    rightMotor->setPWM(50);
+    digitalWrite(11, LOW);   
+    digitalWrite(12, LOW);  
+  }
+  
+  return;
 }
 
-void turnDegrees(int deg) {
+void stop() {
+  encoderDisabled = true;
+  leftMotor->motorStop();
+  rightMotor->motorStop();
+  resetGyro();
+}
+
+void turnDegrees(float deg) {
 
   float initialAngle = getAbsGyroDeg();
 
   if(deg >= 0){
+    deg -= 2.5;
     //do a clockwise turn
     leftMotor->setDirection(CW);
     rightMotor->setDirection(CW);
@@ -81,6 +131,7 @@ void turnDegrees(int deg) {
 
   }
   else{
+    deg += 2.5;
     //do a ccw turn
     leftMotor->setDirection(CCW);
     rightMotor->setDirection(CCW);
@@ -93,9 +144,19 @@ void turnDegrees(int deg) {
 
   }
 
-  
-
   return;
 
 }
 
+void PIDCalc() {
+  static uint32_t timer = 0;
+  
+  if(millis() > timer + 10) {
+    leftMotor->PIDCalc();
+    rightMotor->PIDCalc();
+
+    timer = millis();
+  }
+
+  return;
+}
