@@ -46,24 +46,28 @@ void loop() {
 
     // while(getRightEncoder() < 2785){
     //   driveStraight();
-    //   Serial.println(getRightEncoder());
+    //   Serial.println(getRightMeasuredRPM());
     // }
 
-    while(millis() < time1 + 10000){
+    while(millis() < time1 + 5000){
       PIDCalc();
+      driveStraight();
+      // Serial.println(getError());
+      // Serial.println(getRightMeasuredRPM());
+      // Serial.println(getLeftMeasuredRPM());
     }
 
     stop();
 
-    state = state4;
+    state = state2;
   }
 
   else if(state == state2) {
 
-    delay(5000);
+    delay(2000);
     turnDegrees(90);
     stop();
-    state = state4;
+    state = state3;
 
 
   }
@@ -80,14 +84,18 @@ void loop() {
     //   Serial.println(getLeftEncoder());
     // }
 
-    while(getRightEncoder() < 2785){
-      driveStraight();
-      Serial.println(getRightEncoder());
-    }
-
-    // while(millis() < time1 + 10000){
-    //   PIDCalc();
+    // while(getRightEncoder() < 2785){
+    //   driveStraight();
+    //   Serial.println(getRightEncoder());
     // }
+
+    while(millis() < time1 + 5000){
+      PIDCalc();
+      // driveStraight();
+      // Serial.println(getError());
+      // Serial.println(getRightMeasuredRPM());
+      // Serial.println(getLeftMeasuredRPM());
+    }
 
     stop();
 
@@ -98,6 +106,7 @@ void loop() {
 
   else if(state == state4) {
     // Serial.println(getRightEncoder());
+    // Serial.println(getRightMeasuredRPM());
   }
   
 }

@@ -30,5 +30,6 @@ void driveBackward();
 void driveStraight();
 
 void PIDCalc();
+int32_t getError();
 
 #endif

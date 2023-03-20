@@ -8,9 +8,12 @@ Motor::Motor(uint8_t encoderPin, uint8_t in1Pin, uint8_t in2Pin, uint8_t pwmPin)
   PWMPin = pwmPin;
   PWM = 0;
   MeasuredRPM = 0;
+  ActualCommandedRPM = 0;
+  NominalCommandedRPM = 0;
   LastEncoderTime = 0;
   Error = 0;
   Proportional = 0;
+  Integral = 0;
 }
 
 void Motor::setup() {
@@ -24,33 +27,44 @@ void Motor::setup() {
   return;
 }
 
-uint8_t Motor::getPWM() {
+int16_t Motor::getPWM() {
   return PWM;
 }
 
-void Motor::setPWM(uint8_t pwm) {
+void Motor::setPWM(int16_t pwm) {
   PWM = pwm;
   analogWrite(PWMPin, PWM);
 
   return;
 }
 
-uint16_t Motor::getMeasuredRPM() {
+int16_t Motor::getMeasuredRPM() {
   return MeasuredRPM;
 }
 
-void Motor::setMeasuredRPM(uint16_t rpm) {
+void Motor::setMeasuredRPM(int16_t rpm) {
   MeasuredRPM = rpm;
 
   return;
 }
 
-uint16_t Motor::getCommandedRPM() {
-  return CommandedRPM;
+int16_t Motor::getActualCommandedRPM() {
+  return ActualCommandedRPM;
 }
 
-void Motor::setCommandedRPM(uint16_t rpm) {
-  CommandedRPM = rpm;
+int16_t Motor::getNominalCommandedRPM() {
+  return NominalCommandedRPM;
+}
+
+void Motor::setActualCommandedRPM(int16_t rpm) {
+  ActualCommandedRPM = rpm;
+
+  return;
+}
+
+void Motor::setCommandedRPM(int16_t rpm) {
+  ActualCommandedRPM = rpm;
+  NominalCommandedRPM = rpm;
 
   return;
 }
@@ -73,18 +87,42 @@ void Motor::RPMCalc() {
 }
 
 void Motor::PIDCalc() {
-  Error = getCommandedRPM() - getMeasuredRPM();
+  Error = getActualCommandedRPM() - getMeasuredRPM();
+
+  // Calc proportional
+  Proportional = Error * KP;
+
+  // Calc Integral
+  Integral += 100000 * Error * KI / 100;
+
+  // Calc new PWM
+  PWM = (int16_t)Proportional + (int16_t)(Integral / 100000);
+
+  if(PWM > 255) {
+    PWM = 255;
+  }
+  else if(PWM < 0) {
+    PWM = 0;
+  }
+
+  analogWrite(PWMPin, PWM);
 
   return;
 }
 
 void Motor::resetPID() {
-  setMeasuredRPM(0);
-  setCommandedRPM(0);
+  MeasuredRPM = 0;
+  ActualCommandedRPM = 0;
+  NominalCommandedRPM = 0;
   Error = 0;
   Proportional = 0;
+  Integral = 0;
 
   return;
+}
+
+int32_t Motor::getError() {
+  return Error;
 }
 
 void Motor::setDirection(MotorDirection dir) {
@@ -103,7 +141,8 @@ void Motor::setDirection(MotorDirection dir) {
 }
 
 void Motor::motorStop() {
-  setPWM(0);
+  PWM = 0;
+  analogWrite(PWMPin, PWM);
 
   digitalWrite(IN1Pin, LOW);
   digitalWrite(IN2Pin, LOW);
@@ -122,6 +161,7 @@ void Motor::incrementEncoder() {
 
 void Motor::resetEncoder() {
   EncoderCnt = 0;
+  LastEncoderTime = 0;
 
   return;
 }

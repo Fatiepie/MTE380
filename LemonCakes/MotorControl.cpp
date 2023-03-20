@@ -62,8 +62,8 @@ void driveForward() {
   leftMotor->setDirection(CW);
   rightMotor->setDirection(CCW);
 
-  leftMotor->setCommandedRPM(5000);
-  rightMotor->setCommandedRPM(5000);
+  leftMotor->setCommandedRPM(5968);
+  rightMotor->setCommandedRPM(5968);
 
   // leftMotor->setPWM(50);
   // rightMotor->setPWM(50);
@@ -78,8 +78,11 @@ void driveBackward() {
   leftMotor->setDirection(CCW);
   rightMotor->setDirection(CW);
 
-  leftMotor->setPWM(50);
-  rightMotor->setPWM(50);
+  leftMotor->setCommandedRPM(5968);
+  rightMotor->setCommandedRPM(5968);
+
+  // leftMotor->setPWM(50);
+  // rightMotor->setPWM(50);
 
   return;
 }
@@ -87,18 +90,18 @@ void driveBackward() {
 void driveStraight() {
   saveIMUData();
   if(getAbsGyroDeg() > driveStraightInitialAngle + 1) { // Drifting CW
-    leftMotor->setPWM(45);
-    rightMotor->setPWM(55);
+    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM() - 500);
+    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM() + 500);
     digitalWrite(12, HIGH);
   }
   else if(getAbsGyroDeg() < driveStraightInitialAngle - 1) { //Drifting CCW
-    leftMotor->setPWM(55);
-    rightMotor->setPWM(45);
+    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM() + 500);
+    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM() - 500);
     digitalWrite(11, HIGH);
   }
   else {
-    leftMotor->setPWM(50);
-    rightMotor->setPWM(50);
+    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM());
+    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM());
     digitalWrite(11, LOW);   
     digitalWrite(12, LOW);  
   }
@@ -122,8 +125,8 @@ void turnDegrees(float deg) {
     //do a clockwise turn
     leftMotor->setDirection(CW);
     rightMotor->setDirection(CW);
-    leftMotor->setPWM(50);
-    rightMotor->setPWM(50);     
+    leftMotor->setPWM(60);
+    rightMotor->setPWM(60);     
 
     while(getAbsGyroDeg() < initialAngle + deg){
       saveIMUData();
@@ -135,8 +138,8 @@ void turnDegrees(float deg) {
     //do a ccw turn
     leftMotor->setDirection(CCW);
     rightMotor->setDirection(CCW);
-    leftMotor->setPWM(50);
-    rightMotor->setPWM(50); 
+    leftMotor->setPWM(60);
+    rightMotor->setPWM(60); 
 
     while(getAbsGyroDeg() > initialAngle + deg){
       saveIMUData();
@@ -159,4 +162,8 @@ void PIDCalc() {
   }
 
   return;
+}
+
+int32_t getError() {
+  return rightMotor->getError();
 }
