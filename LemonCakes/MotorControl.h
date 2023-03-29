@@ -25,10 +25,10 @@ uint32_t getLeftMeasuredRPM();
 uint32_t getRightEncoder();
 uint32_t getRightMeasuredRPM();
 
-void driveForward();
+void driveForward(int speed);
 void stop();
 void turnDegrees(float deg);
-void driveBackward();
+void driveBackward(int speed);
 void driveStraight();
 
 void PIDCalc();

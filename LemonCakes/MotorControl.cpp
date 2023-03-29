@@ -57,28 +57,28 @@ uint32_t getRightMeasuredRPM() {
   return rightMotor->getMeasuredRPM();
 }
 
-void driveForward() {
+void driveForward(int speed) {
   driveStraightInitialAngle = getAbsGyroDeg();
   encoderDisabled = false;
   
   leftMotor->setDirection(CW);
   rightMotor->setDirection(CCW);
 
-  leftMotor->setCommandedRPM(3000);
-  rightMotor->setCommandedRPM(3000);
+  leftMotor->setCommandedRPM(speed);
+  rightMotor->setCommandedRPM(speed);
 
   return;
 }
 
-void driveBackward() {
+void driveBackward(int speed) {
   driveStraightInitialAngle = getAbsGyroDeg();
   encoderDisabled = false;
 
   leftMotor->setDirection(CCW);
   rightMotor->setDirection(CW);
 
-  leftMotor->setCommandedRPM(2000);
-  rightMotor->setCommandedRPM(2000);
+  leftMotor->setCommandedRPM(speed);
+  rightMotor->setCommandedRPM(speed);
 
   return;
 }
