@@ -31,6 +31,8 @@ void setupMotors() {
 
   leftMotor->setup();
   rightMotor->setup();
+  pinMode(LEFT_LED, OUTPUT);
+  pinMode(RIGHT_LED, OUTPUT);
 
   // Set up encoder interrupts
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER), leftEncoderISR, RISING);
@@ -62,11 +64,8 @@ void driveForward() {
   leftMotor->setDirection(CW);
   rightMotor->setDirection(CCW);
 
-  leftMotor->setCommandedRPM(5968);
-  rightMotor->setCommandedRPM(5968);
-
-  // leftMotor->setPWM(50);
-  // rightMotor->setPWM(50);
+  leftMotor->setCommandedRPM(3000);
+  rightMotor->setCommandedRPM(3000);
 
   return;
 }
@@ -78,32 +77,29 @@ void driveBackward() {
   leftMotor->setDirection(CCW);
   rightMotor->setDirection(CW);
 
-  leftMotor->setCommandedRPM(5968);
-  rightMotor->setCommandedRPM(5968);
-
-  // leftMotor->setPWM(50);
-  // rightMotor->setPWM(50);
+  leftMotor->setCommandedRPM(2000);
+  rightMotor->setCommandedRPM(2000);
 
   return;
 }
 
 void driveStraight() {
   saveIMUData();
-  if(getAbsGyroDeg() > driveStraightInitialAngle + 1) { // Drifting CW
-    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM() - 500);
-    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM() + 500);
-    digitalWrite(12, HIGH);
+  if(getAbsGyroDeg() > driveStraightInitialAngle + 0.5) { // Drifting CW
+    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM() - 1250);
+    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM() + 1250);
+    digitalWrite(RIGHT_LED, HIGH);
   }
-  else if(getAbsGyroDeg() < driveStraightInitialAngle - 1) { //Drifting CCW
-    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM() + 500);
-    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM() - 500);
-    digitalWrite(11, HIGH);
+  else if(getAbsGyroDeg() < driveStraightInitialAngle - 0.5) { //Drifting CCW
+    leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM() + 1000);
+    rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM() - 1000);
+    digitalWrite(LEFT_LED, HIGH);
   }
   else {
     leftMotor->setActualCommandedRPM(leftMotor->getNominalCommandedRPM());
     rightMotor->setActualCommandedRPM(rightMotor->getNominalCommandedRPM());
-    digitalWrite(11, LOW);   
-    digitalWrite(12, LOW);  
+    digitalWrite(RIGHT_LED, LOW);   
+    digitalWrite(LEFT_LED, LOW);  
   }
   
   return;
@@ -114,6 +110,11 @@ void stop() {
   leftMotor->motorStop();
   rightMotor->motorStop();
   resetGyro();
+
+  digitalWrite(RIGHT_LED, LOW);   
+  digitalWrite(LEFT_LED, LOW); 
+  
+  return;
 }
 
 void turnDegrees(float deg) {
@@ -121,12 +122,12 @@ void turnDegrees(float deg) {
   float initialAngle = getAbsGyroDeg();
 
   if(deg >= 0){
-    deg -= 2.5;
+    deg -= 8;
     //do a clockwise turn
     leftMotor->setDirection(CW);
     rightMotor->setDirection(CW);
-    leftMotor->setPWM(60);
-    rightMotor->setPWM(60);     
+    leftMotor->setPWM(70);
+    rightMotor->setPWM(65);     
 
     while(getAbsGyroDeg() < initialAngle + deg){
       saveIMUData();
@@ -134,12 +135,12 @@ void turnDegrees(float deg) {
 
   }
   else{
-    deg += 2.5;
+    deg += 8;
     //do a ccw turn
     leftMotor->setDirection(CCW);
     rightMotor->setDirection(CCW);
-    leftMotor->setPWM(60);
-    rightMotor->setPWM(60); 
+    leftMotor->setPWM(70);
+    rightMotor->setPWM(65); 
 
     while(getAbsGyroDeg() > initialAngle + deg){
       saveIMUData();

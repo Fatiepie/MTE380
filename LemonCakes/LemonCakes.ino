@@ -1,15 +1,19 @@
 #include "MotorControl.h"
 #include "IMU.h"
 #include "Timer.h"
+#include "ToF.h"
+
+#define TOUCH_SENSOR 4
 
 enum States{
   state1,
   state2,
   state3,
-  state4
+  state4,
+  testTOF
 };
 
-States state = state1;
+States state = testTOF;
 
 void setup() {
   // Set up pins of peripherals
@@ -18,9 +22,11 @@ void setup() {
   setupTimer();
   setupMotors();
   setupIMU();
+  setupToF();
 
-  pinMode(11, OUTPUT);
-  pinMode(12, OUTPUT);
+  pinMode(TOUCH_SENSOR, INPUT);
+
+  while(!digitalRead(TOUCH_SENSOR)){}
   
   delay(1000);
 }
@@ -30,71 +36,42 @@ void setup() {
 
 
 void loop() {
-  
-
 
   if(state == state1) {
 
     int time1 = millis();
     
     driveForward();
-    
-    // while(millis() < time1 + 10000){
-    //   driveStraight();
-    //   Serial.println(getLeftEncoder());
-    // }
 
-    // while(getRightEncoder() < 2785){
-    //   driveStraight();
-    //   Serial.println(getRightMeasuredRPM());
-    // }
-
-    while(millis() < time1 + 5000){
+    while(millis() < time1 + 12000){
       PIDCalc();
       driveStraight();
-      // Serial.println(getError());
-      // Serial.println(getRightMeasuredRPM());
-      // Serial.println(getLeftMeasuredRPM());
     }
 
     stop();
 
-    state = state2;
+    state = state4;
   }
 
   else if(state == state2) {
 
-    delay(2000);
     turnDegrees(90);
     stop();
-    state = state3;
-
+    delay(1000);
+    turnDegrees(-90);
+    stop();
+    state = state4;
 
   }
 
   else if(state == state3) {
-    delay(2000);
     
     int time1 = millis();
     
     driveBackward();
-    
-    // while(millis() < time1 + 10000){
-    //   driveStraight();
-    //   Serial.println(getLeftEncoder());
-    // }
-
-    // while(getRightEncoder() < 2785){
-    //   driveStraight();
-    //   Serial.println(getRightEncoder());
-    // }
 
     while(millis() < time1 + 5000){
       PIDCalc();
-      // driveStraight();
-      // Serial.println(getError());
-      // Serial.println(getRightMeasuredRPM());
-      // Serial.println(getLeftMeasuredRPM());
     }
 
     stop();
@@ -107,6 +84,14 @@ void loop() {
   else if(state == state4) {
     // Serial.println(getRightEncoder());
     // Serial.println(getRightMeasuredRPM());
+  }
+
+  else if(state == testTOF) {
+    int16_t a = testData();
+    Serial.println(a);
+    if(a == -1) {
+      state = state4;
+    }
   }
   
 }

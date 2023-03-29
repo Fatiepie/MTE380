@@ -20,6 +20,17 @@ void setupTimer() {
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
 
+//set timer2 50Hz
+  TCCR2A = 0;// set entire TCCR2A register to 0
+  TCCR2B = 0;// same for TCCR2B
+  TCNT2  = 0;//initialize counter value to 0
+  // set compare match register for 8khz increments
+  OCR2A = 249;// = (16*10^6) / (50*1024) - 1 (must be <256)
+  // turn on CTC mode
+  TCCR2A |= (1 << WGM21);
+  // Set CS22 bit for 1024 prescaler
+  TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);
+
   sei();
 
   return;

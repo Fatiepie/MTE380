@@ -20,7 +20,7 @@ void setupIMU() {
 }
 
 void calcAbsGyro() { 
-  if(getGyro().z > 0.06 || getGyro().z < -0.04) {
+  if(getGyro().z > 0.07 || getGyro().z < -0.04) {
     absGyro = absGyro + getGyro().z * 0.01;
   }
   return;
