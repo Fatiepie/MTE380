@@ -10,10 +10,11 @@
 void setupIMU();
 void calcAbsGyro();
 float getAbsGyroDeg();
+float getAbsGyroDegVertical();
+float getAbsGyroDegSideways();
 
 void resetGyro();
-
-float testIMU();
+void resetVerticalDegree();
 
 void saveIMUData();
 

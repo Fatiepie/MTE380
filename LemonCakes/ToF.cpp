@@ -11,10 +11,10 @@ void setupToF() {
 
 int16_t testData() {
 
-  static int lastCall = 0
-  int currentTime = millis()
+  static int lastCall = 0;
+  int currentTime = millis();
 
-  if(currentTime-lastCall > 25){
+  if(currentTime-lastCall > 50){
     tof.getData(dist); // Get a frame of data
     lastCall = currentTime; // Reset last call
     // if( tof.status == TFMP_READY) {  // If no error...

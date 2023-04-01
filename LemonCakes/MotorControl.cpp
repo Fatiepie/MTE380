@@ -109,9 +109,8 @@ void stop() {
   encoderDisabled = true;
   leftMotor->motorStop();
   rightMotor->motorStop();
-  resetGyro();
 
-  digitalWrite(RIGHT_LED, LOW);   
+  digitalWrite(RIGHT_LED, LOW);
   digitalWrite(LEFT_LED, LOW); 
   
   return;
@@ -122,12 +121,14 @@ void turnDegrees(float deg) {
   float initialAngle = getAbsGyroDeg();
 
   if(deg >= 0){
-    deg -= 8;
+    deg -= 4;
     //do a clockwise turn
     leftMotor->setDirection(CW);
     rightMotor->setDirection(CW);
-    leftMotor->setPWM(70);
-    rightMotor->setPWM(65);     
+    // leftMotor->setPWM(70);
+    // rightMotor->setPWM(65);   
+    leftMotor->setPWM(110);
+    rightMotor->setPWM(115);     
 
     while(getAbsGyroDeg() < initialAngle + deg){
       saveIMUData();
@@ -139,8 +140,8 @@ void turnDegrees(float deg) {
     //do a ccw turn
     leftMotor->setDirection(CCW);
     rightMotor->setDirection(CCW);
-    leftMotor->setPWM(70);
-    rightMotor->setPWM(65); 
+    leftMotor->setPWM(110);
+    rightMotor->setPWM(115); 
 
     while(getAbsGyroDeg() > initialAngle + deg){
       saveIMUData();
